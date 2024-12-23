@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 
@@ -19,8 +20,9 @@ const (
 	dbFilePath     = "inventory.db"
 	reportEndpoint = "/generate-report"
 	loginEndpoint  = "/login"
-	secretKey      = "my_secret_key"
 )
+
+var secretKey = os.Getenv("SECRET_KEY")
 
 // DB instance
 var db *sql.DB
@@ -31,7 +33,7 @@ type User struct {
 	Password string `json:"password"`
 }
 
-// Generate JWT token (for demonstration purposes)
+// GenerateToken Generate JWT token (for demonstration purposes)
 func GenerateToken(username string) (string, error) {
 	claims := jwt.MapClaims{
 		"username": username,
@@ -41,7 +43,7 @@ func GenerateToken(username string) (string, error) {
 	return token.SignedString([]byte(secretKey))
 }
 
-// Middleware to validate JWT
+// AuthMiddleware Middleware to validate JWT
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenString := r.Header.Get("Authorization")
@@ -177,6 +179,10 @@ func generatePDFReport(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	var err error
+	// Ensure the secret key is set
+	if secretKey == "" {
+		log.Fatal("SECRET_KEY environment variable is not set")
+	}
 
 	// Connect to SQLite database
 	db, err = sql.Open("sqlite", dbFilePath)
