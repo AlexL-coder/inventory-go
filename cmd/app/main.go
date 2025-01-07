@@ -1,18 +1,21 @@
 package main
 
 import (
-	"database/sql"
+	"awesomeProject1/ent"
+	"context"
+	//"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/golang-jwt/jwt/v4"
+	"github.com/jung-kurt/gofpdf" // PDF generation
+	//_ "github.com/mattn/go-sqlite3"
+	_ "github.com/mattn/go-sqlite3"
 	"log"
+	_ "modernc.org/sqlite" // Pure Go SQLite driver
 	"net/http"
 	"os"
 	"sync"
 	"time"
-
-	"github.com/golang-jwt/jwt/v4"
-	"github.com/jung-kurt/gofpdf" // PDF generation
-	_ "modernc.org/sqlite"        // Pure Go SQLite driver
 )
 
 // Configurations
@@ -24,8 +27,8 @@ const (
 
 var secretKey = os.Getenv("SECRET_KEY")
 
-// DB instance
-var db *sql.DB
+var client *ent.Client // Global client for demonstration purposes
+var ctx context.Context
 
 // User represents a user in the system
 type User struct {
@@ -97,28 +100,24 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 // Fetch inventory data concurrently
 func fetchInventoryData(resultChan chan map[string]interface{}, errChan chan error) {
 	headers := []string{"item_id", "quantity", "price"}
-	rows, err := db.Query("SELECT item_id, quantity, price FROM inventory")
+
+	// Query all inventory items using Ent
+	items, err := client.Inventory.Query().All(ctx)
 	if err != nil {
 		errChan <- err
 		return
 	}
-	defer rows.Close()
 
+	// Build the result map
 	result := make(map[string]interface{})
-	for rows.Next() {
-		var itemID string
-		var quantity int
-		var price float64
-		if err := rows.Scan(&itemID, &quantity, &price); err != nil {
-			errChan <- err
-			return
-		}
-		result[itemID] = map[string]interface{}{
-			"quantity": quantity,
-			"price":    price,
+	for _, item := range items {
+		result[fmt.Sprintf("%d", item.ItemID)] = map[string]interface{}{
+			"quantity": item.Quantity,
+			"price":    item.Price,
 		}
 	}
 
+	// Send headers and data to the result channel
 	resultChan <- map[string]interface{}{
 		"headers": headers,
 		"data":    result,
@@ -177,6 +176,13 @@ func generatePDFReport(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Inventory represents the database table
+type Inventory struct {
+	ItemID   int `gorm:"primaryKey"`
+	Quantity int
+	Price    float64
+}
+
 func main() {
 	var err error
 	// Ensure the secret key is set
@@ -184,22 +190,46 @@ func main() {
 		log.Fatal("SECRET_KEY environment variable is not set")
 	}
 
-	// Connect to SQLite database
-	db, err = sql.Open("sqlite", dbFilePath)
+	////// Connect to SQLite database
+	//db, err = sql.Open("sqlite", dbFilePath)
+	//if err != nil {
+	//	log.Fatalf("Failed to connect to database: %v", err)
+	//}
+	//defer db.Close()
+
+	client, err := ent.Open("sqlite3", "file:test.db?cache=shared&_fk=1")
 	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+		log.Fatalf("failed opening connection to sqlite: %v", err)
 	}
-	defer db.Close()
+	defer client.Close()
+
+	// Run the auto migration tool.
+	if err := client.Schema.Create(context.Background()); err != nil {
+		log.Fatalf("failed creating schema resources: %v", err)
+	}
+
+	// Insert a new inventory item
+	newItem, err := client.Inventory.
+		Create().
+		SetItemID(1).
+		SetQuantity(100).
+		SetPrice(9.99).
+		Save(context.Background())
+	if err != nil {
+		log.Fatalf("failed creating inventory item: %v", err)
+	}
+	log.Printf("New Inventory Item: %+v\n", newItem)
 
 	// Initialize database schema
-	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS inventory (
-		item_id TEXT PRIMARY KEY,
-		quantity INTEGER,
-		price REAL
-	)`)
-	if err != nil {
-		log.Fatalf("Failed to initialize database schema: %v", err)
-	}
+	//_, err = db.Exec(`CREATE TABLE IF NOT EXISTS go run -mod=mod entgo.io/ent/cmd/ent new User (
+	//	item_id TEXT PRIMARY KEY,
+	//	quantity INTEGER,
+	//	price REAL
+	//)`)
+
+	//if err != nil {
+	//	log.Fatalf("Failed to initialize database schema: %v", err)
+	//}
 
 	// Setup HTTP server
 	http.HandleFunc(loginEndpoint, loginHandler)
