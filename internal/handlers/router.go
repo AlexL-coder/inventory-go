@@ -11,5 +11,4 @@ func SetupRoutes(router *gin.Engine) {
 		api.POST("/user", createUser)
 		api.GET("/users", listUsers)
 	}
-
 }
