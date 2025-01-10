@@ -1,0 +1,22 @@
+# Air configuration for live reloading
+root = "."
+tmp_dir = "tmp"
+
+[build]
+cmd = "go build -o ./tmp/main ./cmd/app"
+bin = "./tmp/main"
+include_ext = ["go", "tpl", "html"]
+
+[run]
+cmd = "./tmp/main"
+watch_dir = ["cmd", "internal", "pkg", "docs", "cmd/app", "internal/handlers"]
+
+[log]
+level = "debug" # Set to debug to get detailed output
+
+[color]
+app = ""
+build = "yellow"
+main = "magenta"
+runner = "green"
+watcher = "cyan"

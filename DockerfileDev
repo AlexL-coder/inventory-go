@@ -1,0 +1,22 @@
+# Use the official Golang image to build the app
+FROM golang:1.23 AS builder
+
+# Set Go environment variables for static compilation
+ENV CGO_ENABLED=1 \
+    GOOS=linux \
+    GOARCH=amd64
+
+# Install gcc and musl-dev for CGO support
+RUN apt-get update && apt-get install -y gcc musl-dev
+
+# Install Air for live reloading
+RUN go install github.com/air-verse/air@latest
+
+# Set the working directory inside the container
+WORKDIR /app_
+
+# Expose the port the app runs on
+EXPOSE 8080
+
+# Command to run Air for live reloading
+CMD ["air"]

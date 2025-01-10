@@ -1,0 +1,81 @@
+definitions:
+  handlers.LoginRequest:
+    properties:
+      password:
+        example: securepassword
+        type: string
+      username:
+        example: john_doe
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /generate-token/{username}:
+    get:
+      description: Generates a JSON Web Token (JWT) with a 1-hour expiration for the
+        given username.
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      responses:
+        "200":
+          description: JWT token
+          schema:
+            type: string
+        "500":
+          description: Error generating token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Generate a JWT token
+      tags:
+      - Authentication
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates the user with their credentials and returns a JWT
+        token if successful.
+      parameters:
+      - description: User credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: JWT token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request payload
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Invalid username or password
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Error generating token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Login user and generate JWT token
+      tags:
+      - Authentication
+swagger: "2.0"

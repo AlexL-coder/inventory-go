@@ -37,9 +37,6 @@ WORKDIR /root/
 # Copy the compiled binary from the builder image
 COPY --from=builder /app/main .
 
-# Copy the SQLite database file if it exists
-COPY --from=builder /app/inventory.db ./
-
 # Include the `ent` folder explicitly in the runtime container
 COPY --from=builder /app/ent ent
 
