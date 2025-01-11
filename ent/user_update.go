@@ -55,27 +55,6 @@ func (uu *UserUpdate) SetNillableEmail(s *string) *UserUpdate {
 	return uu
 }
 
-// SetAge sets the "age" field.
-func (uu *UserUpdate) SetAge(i int) *UserUpdate {
-	uu.mutation.ResetAge()
-	uu.mutation.SetAge(i)
-	return uu
-}
-
-// SetNillableAge sets the "age" field if the given value is not nil.
-func (uu *UserUpdate) SetNillableAge(i *int) *UserUpdate {
-	if i != nil {
-		uu.SetAge(*i)
-	}
-	return uu
-}
-
-// AddAge adds i to the "age" field.
-func (uu *UserUpdate) AddAge(i int) *UserUpdate {
-	uu.mutation.AddAge(i)
-	return uu
-}
-
 // SetPwd sets the "pwd" field.
 func (uu *UserUpdate) SetPwd(s string) *UserUpdate {
 	uu.mutation.SetPwd(s)
@@ -136,7 +115,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := uu.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeString))
 	if ps := uu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -149,12 +128,6 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := uu.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
-	}
-	if value, ok := uu.mutation.Age(); ok {
-		_spec.SetField(user.FieldAge, field.TypeInt, value)
-	}
-	if value, ok := uu.mutation.AddedAge(); ok {
-		_spec.AddField(user.FieldAge, field.TypeInt, value)
 	}
 	if value, ok := uu.mutation.Pwd(); ok {
 		_spec.SetField(user.FieldPwd, field.TypeString, value)
@@ -204,27 +177,6 @@ func (uuo *UserUpdateOne) SetNillableEmail(s *string) *UserUpdateOne {
 	if s != nil {
 		uuo.SetEmail(*s)
 	}
-	return uuo
-}
-
-// SetAge sets the "age" field.
-func (uuo *UserUpdateOne) SetAge(i int) *UserUpdateOne {
-	uuo.mutation.ResetAge()
-	uuo.mutation.SetAge(i)
-	return uuo
-}
-
-// SetNillableAge sets the "age" field if the given value is not nil.
-func (uuo *UserUpdateOne) SetNillableAge(i *int) *UserUpdateOne {
-	if i != nil {
-		uuo.SetAge(*i)
-	}
-	return uuo
-}
-
-// AddAge adds i to the "age" field.
-func (uuo *UserUpdateOne) AddAge(i int) *UserUpdateOne {
-	uuo.mutation.AddAge(i)
 	return uuo
 }
 
@@ -301,7 +253,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if err := uuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeString))
 	id, ok := uuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "User.id" for update`)}
@@ -331,12 +283,6 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
-	}
-	if value, ok := uuo.mutation.Age(); ok {
-		_spec.SetField(user.FieldAge, field.TypeInt, value)
-	}
-	if value, ok := uuo.mutation.AddedAge(); ok {
-		_spec.AddField(user.FieldAge, field.TypeInt, value)
 	}
 	if value, ok := uuo.mutation.Pwd(); ok {
 		_spec.SetField(user.FieldPwd, field.TypeString, value)

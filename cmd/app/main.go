@@ -1,9 +1,9 @@
 package main
 
 import (
+	"awesomeProject1/api/v1/auth"
 	"awesomeProject1/config"
 	"awesomeProject1/internal/db"
-	"awesomeProject1/internal/handlers"
 	"github.com/gin-gonic/gin"
 	"log"
 )
@@ -27,7 +27,7 @@ func main() {
 	db.InitDB()
 	defer db.Client.Close()
 	router := gin.Default()
-	handlers.SetupRoutes(router)
+	auth.SetupRoutes(router)
 	log.Println("Starting server on 8080...")
 	err := router.Run(":8080")
 	if err != nil {

@@ -14,7 +14,7 @@ func init() {
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescPwd is the schema descriptor for pwd field.
-	userDescPwd := userFields[4].Descriptor()
+	userDescPwd := userFields[3].Descriptor()
 	// user.PwdValidator is a validator for the "pwd" field. It is called by the builders before save.
 	user.PwdValidator = func() func(string) error {
 		validators := userDescPwd.Validators
@@ -32,4 +32,8 @@ func init() {
 			return nil
 		}
 	}()
+	// userDescID is the schema descriptor for id field.
+	userDescID := userFields[0].Descriptor()
+	// user.DefaultID holds the default value on creation for the id field.
+	user.DefaultID = userDescID.Default.(func() string)
 }

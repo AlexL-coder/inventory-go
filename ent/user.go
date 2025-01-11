@@ -15,13 +15,11 @@ import (
 type User struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID string `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Email holds the value of the "email" field.
 	Email string `json:"email,omitempty"`
-	// Age holds the value of the "age" field.
-	Age int `json:"age,omitempty"`
 	// Pwd holds the value of the "pwd" field.
 	Pwd          string `json:"-"`
 	selectValues sql.SelectValues
@@ -32,9 +30,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldID, user.FieldAge:
-			values[i] = new(sql.NullInt64)
-		case user.FieldName, user.FieldEmail, user.FieldPwd:
+		case user.FieldID, user.FieldName, user.FieldEmail, user.FieldPwd:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -52,11 +48,11 @@ func (u *User) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case user.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value.Valid {
+				u.ID = value.String
 			}
-			u.ID = int(value.Int64)
 		case user.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -68,12 +64,6 @@ func (u *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field email", values[i])
 			} else if value.Valid {
 				u.Email = value.String
-			}
-		case user.FieldAge:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field age", values[i])
-			} else if value.Valid {
-				u.Age = int(value.Int64)
 			}
 		case user.FieldPwd:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -122,9 +112,6 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("email=")
 	builder.WriteString(u.Email)
-	builder.WriteString(", ")
-	builder.WriteString("age=")
-	builder.WriteString(fmt.Sprintf("%v", u.Age))
 	builder.WriteString(", ")
 	builder.WriteString("pwd=<sensitive>")
 	builder.WriteByte(')')

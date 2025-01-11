@@ -1,0 +1,72 @@
+package auth
+
+import (
+	"awesomeProject1/ent/user"
+	"awesomeProject1/internal/db"
+	pb "awesomeProject1/services/grpc_auth/proto"
+	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
+	"google.golang.org/grpc"
+	"net/http"
+)
+
+var authClient pb.AuthServiceClient
+
+func InitGRPCConnection() {
+	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+	if err != nil {
+		panic(err)
+	}
+	authClient = pb.NewAuthServiceClient(conn)
+}
+
+type LoginRequest struct {
+	Username string `json:"username" example:"john_doe"`
+	Password string `json:"password" example:"securepassword"`
+}
+
+func LoginHandler(c *gin.Context) {
+	var req LoginRequest
+	// Bind JSON input to the request struct
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+
+	// Query the user from the database
+	user, err := db.Client.User.
+		Query().
+		Where(user.Email(req.Username)). // Use the `email` field to query the user
+		Only(c.Request.Context())
+
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"auth-error": "Invalid username or password"})
+		return
+	}
+
+	// Compare the hashed password
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Pwd), []byte(req.Password)); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"auth-error": "Invalid username or password"})
+		return
+	}
+	tokenChan := make(chan string)
+	erroChan := make(chan error)
+
+	// Generate a JWT token
+	go func() {
+		token, err := generateToken(req.Username)
+		if err != nil {
+			erroChan <- err
+		}
+		tokenChan <- token
+	}()
+
+	select {
+	case token := <-tokenChan:
+		c.JSON(http.StatusOK, gin.H{"token": token})
+
+	case err := <-erroChan:
+		c.JSON(http.StatusInternalServerError, gin.H{"auth-error": err.Error()})
+		return
+	}
+}

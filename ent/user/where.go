@@ -9,48 +9,58 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id int) predicate.User {
+func ID(id string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id int) predicate.User {
+func IDEQ(id string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id int) predicate.User {
+func IDNEQ(id string) predicate.User {
 	return predicate.User(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...int) predicate.User {
+func IDIn(ids ...string) predicate.User {
 	return predicate.User(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...int) predicate.User {
+func IDNotIn(ids ...string) predicate.User {
 	return predicate.User(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id int) predicate.User {
+func IDGT(id string) predicate.User {
 	return predicate.User(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id int) predicate.User {
+func IDGTE(id string) predicate.User {
 	return predicate.User(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id int) predicate.User {
+func IDLT(id string) predicate.User {
 	return predicate.User(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id int) predicate.User {
+func IDLTE(id string) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldID, id))
+}
+
+// IDEqualFold applies the EqualFold predicate on the ID field.
+func IDEqualFold(id string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldID, id))
+}
+
+// IDContainsFold applies the ContainsFold predicate on the ID field.
+func IDContainsFold(id string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldID, id))
 }
 
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
@@ -61,11 +71,6 @@ func Name(v string) predicate.User {
 // Email applies equality check predicate on the "email" field. It's identical to EmailEQ.
 func Email(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldEmail, v))
-}
-
-// Age applies equality check predicate on the "age" field. It's identical to AgeEQ.
-func Age(v int) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldAge, v))
 }
 
 // Pwd applies equality check predicate on the "pwd" field. It's identical to PwdEQ.
@@ -201,46 +206,6 @@ func EmailEqualFold(v string) predicate.User {
 // EmailContainsFold applies the ContainsFold predicate on the "email" field.
 func EmailContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldEmail, v))
-}
-
-// AgeEQ applies the EQ predicate on the "age" field.
-func AgeEQ(v int) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldAge, v))
-}
-
-// AgeNEQ applies the NEQ predicate on the "age" field.
-func AgeNEQ(v int) predicate.User {
-	return predicate.User(sql.FieldNEQ(FieldAge, v))
-}
-
-// AgeIn applies the In predicate on the "age" field.
-func AgeIn(vs ...int) predicate.User {
-	return predicate.User(sql.FieldIn(FieldAge, vs...))
-}
-
-// AgeNotIn applies the NotIn predicate on the "age" field.
-func AgeNotIn(vs ...int) predicate.User {
-	return predicate.User(sql.FieldNotIn(FieldAge, vs...))
-}
-
-// AgeGT applies the GT predicate on the "age" field.
-func AgeGT(v int) predicate.User {
-	return predicate.User(sql.FieldGT(FieldAge, v))
-}
-
-// AgeGTE applies the GTE predicate on the "age" field.
-func AgeGTE(v int) predicate.User {
-	return predicate.User(sql.FieldGTE(FieldAge, v))
-}
-
-// AgeLT applies the LT predicate on the "age" field.
-func AgeLT(v int) predicate.User {
-	return predicate.User(sql.FieldLT(FieldAge, v))
-}
-
-// AgeLTE applies the LTE predicate on the "age" field.
-func AgeLTE(v int) predicate.User {
-	return predicate.User(sql.FieldLTE(FieldAge, v))
 }
 
 // PwdEQ applies the EQ predicate on the "pwd" field.

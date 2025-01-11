@@ -15,8 +15,6 @@ const (
 	FieldName = "name"
 	// FieldEmail holds the string denoting the email field in the database.
 	FieldEmail = "email"
-	// FieldAge holds the string denoting the age field in the database.
-	FieldAge = "age"
 	// FieldPwd holds the string denoting the pwd field in the database.
 	FieldPwd = "pwd"
 	// Table holds the table name of the user in the database.
@@ -28,7 +26,6 @@ var Columns = []string{
 	FieldID,
 	FieldName,
 	FieldEmail,
-	FieldAge,
 	FieldPwd,
 }
 
@@ -45,6 +42,8 @@ func ValidColumn(column string) bool {
 var (
 	// PwdValidator is a validator for the "pwd" field. It is called by the builders before save.
 	PwdValidator func(string) error
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() string
 )
 
 // OrderOption defines the ordering options for the User queries.
@@ -63,11 +62,6 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByEmail orders the results by the email field.
 func ByEmail(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEmail, opts...).ToFunc()
-}
-
-// ByAge orders the results by the age field.
-func ByAge(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldAge, opts...).ToFunc()
 }
 
 // ByPwd orders the results by the pwd field.
