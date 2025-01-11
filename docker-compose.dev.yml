@@ -1,25 +1,20 @@
 version: "3.9"
 services:
-#  app:
-#    build:
-#      context: .
-#      dockerfile: DockerfileDev
-#    ports:
-#      - "8080:8080"
-#    volumes:
-#      - .:/app_
-#    command: [ "air", "-c", "/app_/air.toml" ]
-#    working_dir: /app_
-#    environment:
-#      - DB_HOST=${DB_HOST}
-#      - DB_PORT=${DB_PORT}
-#      - DB_USER=${DB_USER}
-#      - DB_PASSWORD=${DB_PASSWORD}
-#      - DB_NAME=${DB_NAME}
-#      - LOG_LEVEL=debug
-#      - GO_ENV=development
-#    depends_on:
-#      - postgres
+  api_gateway:
+    build:
+      context: .
+      dockerfile: DockerfileDev
+    ports:
+      - "8080:8080"
+    volumes:
+         - .:/app
+    command: [ "air", "-c", "/app/air.toml" ]
+    environment:
+      - LOG_LEVEL=debug
+      - GO_ENV=development
+    depends_on:
+      - postgres
+      - grpc_auth
 
   grpc_auth:
     build:

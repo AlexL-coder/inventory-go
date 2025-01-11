@@ -1,0 +1,79 @@
+awesomeProject1/
+├── api/                                # API Documentation (Swagger, etc.)
+│   ├── v1/
+│   │   ├── docs.go                     # Swagger doc comments for version 1 APIs
+│   │   └── swagger.yaml                # YAML for Swagger
+│   └── v2/                             # Future API versions
+├── cmd/                                # Entry points for services
+│   ├── app/                            # Gin-based HTTP service
+│   │   ├── main.go                     # Entry point for Gin HTTP server
+│   └── grpc_auth_service/              # gRPC Auth service entry point
+│       └── main.go                     # Entry point for gRPC Auth service
+├── config/                             # Configuration files and logic
+│   ├── config.go                       # Application-level configuration
+│   └── log.go                          # Logger initialization (e.g., Logrus)
+├── docs/                               # General project documentation
+├── ent/                                # Ent ORM generated code
+│   ├── schema/                         # Database schema definitions
+│   │   └── user.go                     # User schema
+│   ├── ent.go                          # Generated Ent ORM code
+│   └── generate.go                     # Ent code generation logic
+├── internal/                           # Private application logic
+│   ├── db/                             # Database initialization
+│   │   └── db.go                       # Database connection logic
+│   ├── services/                       # Business logic
+│   │   ├── auth/                       # Authentication service logic
+│   │   │   ├── logic.go                # Business logic for Auth
+│   │   │   └── grpc_auth_client.go     # gRPC client for auth service
+│   │   └── user/                       # User service logic
+│   │       ├── logic.go                # Business logic for Users
+│   │       └── grpc_user_client.go     # gRPC client for user service
+│   └── handlers/                       # HTTP request handlers (for Gin)
+│       ├── auth_handler.go             # Handles authentication-related HTTP endpoints
+│       └── user_handler.go             # Handles user-related HTTP endpoints
+├── migrations/                         # Database migration files
+├── pkg/                                # Reusable packages (shared libraries)
+│   ├── jwt/                            # JWT helper logic
+│   │   ├── generate.go                 # JWT generation logic
+│   │   └── validate.go                 # JWT validation logic
+│   ├── utils/                          # Utility functions (e.g., hash, common helpers)
+│   └── middleware/                     # Middleware for Gin
+│       └── auth_middleware.go          # Authentication middleware
+├── scripts/                            # Automation scripts
+│   └── generate-proto.sh               # Script to generate gRPC code
+├── services/                           # gRPC services
+│   ├── grpc_auth/                      # Auth gRPC service
+│   │   ├── proto/                      # Proto definitions for gRPC
+│   │   │   ├── auth.proto              # Proto file for Auth service
+│   │   │   ├── auth.pb.go              # Generated gRPC code for proto
+│   │   │   └── auth_grpc.pb.go         # gRPC server/client interface
+│   │   ├── auth_service.go             # gRPC Auth service implementation
+│   │   └── logic.go                    # Core business logic for Auth
+│   ├── grpc_user/                      # User gRPC service
+│   │   ├── proto/                      # Proto definitions for User service
+│   │   │   ├── user.proto              # Proto file for User service
+│   │   │   ├── user.pb.go              # Generated gRPC code for proto
+│   │   │   └── user_grpc.pb.go         # gRPC server/client interface
+│   │   ├── user_service.go             # gRPC User service implementation
+│   │   └── logic.go                    # Core business logic for User
+│   └── grpc_order/                     # Example of another service (future extension)
+│       ├── proto/
+│       ├── order_service.go
+│       └── logic.go
+├── tests/                              # Unit and integration tests
+│   ├── auth_test.go                    # Tests for authentication service
+│   ├── user_test.go                    # Tests for user service
+│   └── integration_test.go             # Integration tests for the entire app
+├── tmp/                                # Temporary files (ignored in production)
+│   └── main                            # Air binary for live reloading
+├── .env                                # Environment variables
+├── .gitignore                          # Git ignore rules
+├── air.toml                            # Air configuration for live reloading
+├── docker-compose.dev.yml              # Docker Compose for development
+├── docker-compose.prod.yml             # Docker Compose for production
+├── Dockerfile.dev                      # Dockerfile for development environment
+├── Dockerfile.prod                     # Dockerfile for production environment
+├── go.mod                              # Go module dependencies
+├── go.sum                              # Go module checksum file
+├── makefile                            # Build and automation commands
+└── README.md                           # Project documentation

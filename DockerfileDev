@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y gcc musl-dev
 RUN go install github.com/air-verse/air@latest
 
 # Set the working directory inside the container
-WORKDIR /app_
+WORKDIR /app
 
 # Expose the port the app runs on
 EXPOSE 8080

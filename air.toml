@@ -3,13 +3,13 @@ root = "."
 tmp_dir = "tmp"
 
 [build]
-cmd = "go build -o ./tmp/main ./cmd/app"
+cmd = "go build -o ./tmp/main ./cmd/api_gateway"
 bin = "./tmp/main"
 include_ext = ["go", "tpl", "html"]
 
 [run]
 cmd = "./tmp/main"
-watch_dir = ["cmd", "internal", "pkg", "docs", "cmd/app", "internal/handlers"]
+watch_dir = ["cmd", "internal", "pkg", "docs", "cmd/api_gateway", "internal/handlers"]
 
 [log]
 level = "debug" # Set to debug to get detailed output
