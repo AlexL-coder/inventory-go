@@ -41,3 +41,15 @@ services:
       POSTGRES_DB: ${DB_NAME}
     ports:
       - "5432:5432"
+    # Prometheus Monitoring Service
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - .services/prometheus:/etc/prometheus/
+    ports:
+      - "9090:9090" # Prometheus dashboard
+    depends_on:
+      - api_gateway
+      - grpc_auth
+      - postgres
