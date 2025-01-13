@@ -15,6 +15,8 @@ services:
     depends_on:
       - postgres
       - grpc_auth
+    networks:
+      - dev_network
 
   grpc_auth:
     build:
@@ -32,6 +34,8 @@ services:
       - DB_NAME=${DB_NAME}
     depends_on:
       - postgres
+    networks:
+      - dev_network
 
   postgres:
     image: postgres:latest
@@ -41,15 +45,56 @@ services:
       POSTGRES_DB: ${DB_NAME}
     ports:
       - "5432:5432"
-    # Prometheus Monitoring Service
+    networks:
+      - dev_network
+
+  postgres_exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter:latest
+    ports:
+      - "9187:9187"
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?sslmode=disable"
+    depends_on:
+      - postgres
+    networks:
+      - dev_network
+
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
-      - .services/prometheus:/etc/prometheus/
+      - ./services/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090" # Prometheus dashboard
     depends_on:
       - api_gateway
       - grpc_auth
       - postgres
+    networks:
+      - dev_network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"  # Grafana UI
+    user: root
+    environment:
+      - GF_SECURITY_ADMIN_USER=m_admin
+      - GF_SECURITY_ADMIN_PASSWORD=pwd123!3444
+      - GF_DATASOURCES__DATASOURCES_0_NAME=Prometheus
+      - GF_DATASOURCES__DATASOURCES_0_TYPE=prometheus
+      - GF_DATASOURCES__DATASOURCES_0_URL=http://localhos:9090
+      - GF_DATASOURCES__DATASOURCES_0_ACCESS=proxy
+    volumes:
+      - ./services/grafana/data:/var/lib/grafana
+      - ./services/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./services/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - dev_network
+    depends_on:
+      - prometheus
+
+networks:
+  dev_network:
+    driver: bridge

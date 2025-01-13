@@ -1,0 +1,98 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "postgres-metrics",
+    "title": "PostgreSQL Prometheus Dashboard",
+    "timezone": "browser",
+    "version": 1,
+    "schemaVersion": 37,
+    "tags": ["prometheus", "postgresql"],
+    "panels": [
+      {
+        "type": "stat",
+        "title": "PostgreSQL Connections",
+        "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+        "targets": [
+          {
+            "expr": "pg_stat_activity_count{instance='localhost:9187'}",
+            "legendFormat": "Active Connections",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "type": "time-series",
+        "title": "Query Latency",
+        "gridPos": { "x": 6, "y": 0, "w": 12, "h": 6 },
+        "targets": [
+          {
+            "expr": "pg_stat_statements_mean_exec_time_seconds{instance='localhost:9187'}",
+            "legendFormat": "Mean Execution Time (s)",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "type": "time-series",
+        "title": "Cache Hit Ratio",
+        "gridPos": { "x": 0, "y": 4, "w": 12, "h": 6 },
+        "targets": [
+          {
+            "expr": "pg_stat_database_blks_hit / (pg_stat_database_blks_hit + pg_stat_database_blks_read)",
+            "legendFormat": "Cache Hit Ratio",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "type": "gauge",
+        "title": "Disk Usage",
+        "gridPos": { "x": 12, "y": 4, "w": 12, "h": 6 },
+        "targets": [
+          {
+            "expr": "pg_database_size_bytes{instance='localhost:9187'}",
+            "legendFormat": "{{database}} Size (Bytes)",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "type": "time-series",
+        "title": "Slow Queries",
+        "gridPos": { "x": 0, "y": 10, "w": 12, "h": 6 },
+        "targets": [
+          {
+            "expr": "pg_stat_statements_total_time_seconds{instance='localhost:9187'}",
+            "legendFormat": "Total Query Time (s)",
+            "refId": "A"
+          }
+        ]
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "type": "query",
+          "datasource": "Prometheus",
+          "name": "instance",
+          "query": "label_values(up{job='postgres_exporter'}, instance)",
+          "refresh": 1
+        }
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "name": "Prometheus Alerts",
+          "datasource": "Prometheus",
+          "iconColor": "rgba(255, 96, 96, 1)",
+          "enable": true,
+          "query": {
+            "expr": "ALERTS"
+          }
+        }
+      ]
+    }
+  },
+  "overwrite": true
+}

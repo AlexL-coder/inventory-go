@@ -11,6 +11,6 @@ scrape_configs:
     static_configs:
       - targets: ['grpc_auth:5000']
 
-  - job_name: 'postgres'
+  - job_name: 'postgres_exporter'
     static_configs:
       - targets: ['postgres_exporter:9187']
