@@ -1,11 +1,11 @@
 package db
 
 import (
-	"awesomeProject1/config"
 	"awesomeProject1/ent"
 	"context"
 	"fmt"
 	_ "github.com/lib/pq"
+	"github.com/sirupsen/logrus"
 	"log"
 	"os"
 	"time"
@@ -13,8 +13,8 @@ import (
 
 var Client *ent.Client
 
-func InitDB() {
-	config.Log.Info("Attempting to connect to Postgres...")
+func InitDB(Log *logrus.Logger) {
+	Log.Info("Attempting to connect to Postgres...")
 	// Fetch database connection details from environment variables
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")

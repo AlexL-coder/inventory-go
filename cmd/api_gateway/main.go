@@ -2,6 +2,7 @@ package main
 
 import (
 	"awesomeProject1/cmd/api_gateway/routes"
+	"awesomeProject1/config"
 	"awesomeProject1/services/grpc_auth/proto"
 	"context"
 	"github.com/gin-gonic/gin"
@@ -12,6 +13,15 @@ import (
 )
 
 func main() {
+	// Initialize RabbitMQ
+	maxRetries := 10
+	rabbitConn, rabbitCh, err := config.InitializeRabbitMQ(maxRetries)
+	if err != nil {
+		log.Fatalf("Could not establish RabbitMQ connection after %d attempts: %v", maxRetries, err)
+	}
+	defer rabbitConn.Close()
+	defer rabbitCh.Close()
+
 	// Initialize Gin
 	router := gin.Default()
 
@@ -36,7 +46,7 @@ func main() {
 	authClient := proto.NewAuthServiceClient(conn)
 
 	// Setup Auth routes
-	routes.AuthRoutes(router, authClient)
+	routes.AuthRoutes(router, authClient, rabbitCh)
 
 	// Start the server
 	log.Println("Starting API Gateway on port 8080...")

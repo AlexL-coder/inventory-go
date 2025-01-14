@@ -13,5 +13,5 @@ func InitLogging() {
 		ForceColors:   true, // Add colors to logs
 	})
 	Log.SetOutput(os.Stdout)
-	Log.SetLevel(logrus.DebugLevel) // Enable debug-level logging
+	Log.SetLevel(logrus.DebugLevel)
 }

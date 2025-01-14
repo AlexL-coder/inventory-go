@@ -12,6 +12,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/lib/pq v1.10.9
 	github.com/sirupsen/logrus v1.9.3
+	github.com/streadway/amqp v1.1.0
 	github.com/swaggo/swag v1.16.4
 	golang.org/x/crypto v0.32.0
 	google.golang.org/grpc v1.69.2
